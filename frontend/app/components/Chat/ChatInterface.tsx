@@ -22,9 +22,7 @@ import {
     sty_ChatIntercafe_chat_message,
     sty_ChatIntercafe_chat_input
 } from "../pageLayout"
-
-import { base_http } from "../../baseUrl"
-
+import {detectHost} from "@/app/api";
 
 interface ChatInterfaceComponentProps {
     settingConfig: SettingsConfiguration;
@@ -52,19 +50,16 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
 
     const onOptionChangeHandler = (event:  React.ChangeEvent<any>) => {
         set_llm_model(event.target.value);
-        console.log(
-            "User Selected Value - ",
-            event.target.value
-        )
     }
 
     const [options, setOptions] = useState<string[]>([])
     useEffect(() => {
         async function fetchData() {
+            const host = await detectHost()
+
             // Fetch data
-            const resp = await fetch(base_http + "/api/ollama_model")
+            const resp = await fetch(host + "/api/ollama_model")
             let data = await resp.json()
-            console.log(data)
             let results: string[] = ['Select model']
             // Store results in the results array
             data.forEach((value: string) => {

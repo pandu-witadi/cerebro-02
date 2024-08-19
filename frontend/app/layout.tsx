@@ -3,8 +3,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
 
-import { detectHost } from "./api"
-
 export const metadata: Metadata = {
     title: "cerebro",
     description: "advanced RAG",

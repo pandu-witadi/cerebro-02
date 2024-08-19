@@ -1,3 +1,5 @@
+export const KEY_USER_TYPE = 'userType';
+
 export interface SettingsPayload {
   selectedTheme: string;
   themes: Settings;

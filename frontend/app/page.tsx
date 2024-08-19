@@ -8,7 +8,7 @@ import SettingsComponent from "./components/Settings/SettingsComponent"
 import ChatComponent from "./components/Chat/ChatComponent"
 import DocumentViewerComponent from "./components/Document/DocumentViewerComponent"
 import StatusComponent from "./components/Status/StatusComponent"
-import { Settings, BaseSettings } from "./components/Settings/types"
+import {Settings, BaseSettings, KEY_USER_TYPE} from "./components/Settings/types"
 import RAGComponent from "./components/RAG/RAGComponent"
 import { HealthPayload } from "./components/Status/types"
 import { RAGConfig, RAGResponse } from "./components/RAG/types"
@@ -35,10 +35,28 @@ export default function Home() {
     const [RAGConfig, setRAGConfig] = useState<RAGConfig | null>(null)
     const [APIHost, setAPIHost] = useState<string | null>(null)
 
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const setUserProfile = (value: string) => {
+        if (typeof window !== "undefined") {
+            // Check if window is defined
+            localStorage.setItem(KEY_USER_TYPE, JSON.stringify(value))
+        }
+    }
+    const getUserProfile = () => {
+        let result : string | null = 'false';
+        if (typeof window !== "undefined") {
+            result = localStorage.getItem(KEY_USER_TYPE);
+            if(result === null) {
+                result = 'false';
+            }
+        }
+        setIsAdmin(result==='"true"');
+    }
+
     const fetchHost = async () => {
         try {
             const host = await detectHost()
-            console.log(host)
             setAPIHost(host)
             if (host) {
                 try {
@@ -84,7 +102,8 @@ export default function Home() {
     }
 
     useEffect(() => {
-        fetchHost();
+        fetchHost().then();
+        getUserProfile();
     }, []);
 
     const importConfig = async () => {
@@ -141,12 +160,13 @@ export default function Home() {
                     <Navbar
                         APIHost={APIHost}
                         production={production}
-                        title={ baseSetting[settingTemplate].Customization.settings.title.text }
-                        subtitle={baseSetting[settingTemplate].Customization.settings.subtitle.text }
-                        imageSrc={ baseSetting[settingTemplate].Customization.settings.image.src }
+                        title={baseSetting[settingTemplate].Customization.settings.title.text}
+                        subtitle={baseSetting[settingTemplate].Customization.settings.subtitle.text}
+                        imageSrc={baseSetting[settingTemplate].Customization.settings.image.src}
                         version="v2.0.4"
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
+                        isAdmin={isAdmin}
                     />
 
                     {currentPage === "CHAT" && (
@@ -215,7 +235,7 @@ export default function Home() {
                     )}
                 </div>
             ) : (
-                    <div className="flex items-center justify-center h-screen gap-2">
+                <div className="flex items-center justify-center h-screen gap-2">
                         <PulseLoader loading={true} size={12} speedMultiplier={0.75} />
                         <p>Loading Verba</p>
                     </div>
