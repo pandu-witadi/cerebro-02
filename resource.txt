@@ -1,0 +1,25 @@
+https://stackoverflow.com/questions/77138105/reactmarkdown-remarkgfm-everything-renders-as-expected-except-tables-typee
+So the compatible versions as of today are
+"react-markdown": "^8.0.7",
+"remark-gfm": "^3.0.1",
+
+
+https://www.copycat.dev/blog/react-markdown/
+React Markdown: A Thorough Guide With Markdown Examples
+
+https://www.skovy.dev/blog/vercel-ai-rendering-markdown?seed=chlk3b
+Rendering rich responses from LLMs
+
+https://stackoverflow.com/questions/74914969/override-65ch-max-width-in-tailwind-css-typography
+theme: {
+    extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            'prose': {
+              'max-width': '100ch'
+            },
+            'max-w-prose': {
+              'max-width': '100ch'
+            },
+        ...
