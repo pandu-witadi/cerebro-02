@@ -1,7 +1,8 @@
-export const KEY_USER_TYPE = 'userType';
+export const DEFAULT_MODEL = 'llama3:latest';
 
 export interface SettingsPayload {
   selectedTheme: string;
+  selectedModel: string;
   themes: Settings;
 }
 
@@ -111,26 +112,27 @@ const BaseFonts: SelectSetting = {
 const BaseCustomization: CustomizationSettings = {
   title: "Customization",
   description:
-    "Customize the layout of your Verba by changing the title, subtitle, logo, and colors of the app.",
+    "Customize the layout by changing the title, subtitle, logo, and colors of the app.",
   settings: {
-    title: { text: "Verba", type: "text", description: "Title of the Page" },
+    title: { text: "Cerebro", type: "text", description: "Title of the Page" },
     subtitle: {
-      text: "The Golden RAGtriever",
+      text: "",
       type: "text",
       description: "Subtitle of the Page",
     },
     intro_message: {
-      text: "Welcome to Verba, your open-source RAG application!",
+      text: "Welcome to Cerebro !",
       type: "text",
       description: "Intro Message",
     },
     placeholder_message: {
-      text: "Ask Verba anything!",
+      text: "Ask Cerebro anything!",
       type: "text",
       description: "Input Placeholder",
     },
+    font: BaseFonts,
     image: {
-      src: "https://github.com/weaviate/Verba/blob/main/img/verba_icon.png?raw=true",
+      src: "https://geosurvai.com/assets/images/zara.png",
       type: "image",
       description: "Logo of the Page",
     },
@@ -185,7 +187,6 @@ const BaseCustomization: CustomizationSettings = {
       type: "color",
       description: "Console Text",
     },
-    font: BaseFonts,
     theme: "light",
   },
 };
@@ -193,26 +194,27 @@ const BaseCustomization: CustomizationSettings = {
 const CustomCustomization: CustomizationSettings = {
   title: "Customization",
   description:
-    "Customize the layout of your Verba by changing the title, subtitle, logo, and colors of the app.",
+      "Customize the layout by changing the title, subtitle, logo, and colors of the app.",
   settings: {
-    title: { text: "My RAG", type: "text", description: "Title of the Page" },
+    title: { text: "Cerebro", type: "text", description: "Title of the Page" },
     subtitle: {
-      text: "Powered by Weaviate",
+      text: "",
       type: "text",
       description: "Subtitle of the Page",
     },
     intro_message: {
-      text: "Welcome to Verba, your open-source RAG application!",
+      text: "Welcome to Cerebro !",
       type: "text",
       description: "Intro Message",
     },
     placeholder_message: {
-      text: "Ask Verba anything!",
+      text: "Ask Cerebro anything!",
       type: "text",
       description: "Input Placeholder",
     },
+    font: BaseFonts,
     image: {
-      src: "https://github.com/weaviate/Verba/blob/main/img/verba_icon.png?raw=true",
+      src: "https://geosurvai.com/assets/images/zara.png",
       type: "image",
       description: "Logo of the Page",
     },
@@ -267,7 +269,6 @@ const CustomCustomization: CustomizationSettings = {
       type: "color",
       description: "Console Text",
     },
-    font: BaseFonts,
     theme: "light",
   },
 };
@@ -275,26 +276,32 @@ const CustomCustomization: CustomizationSettings = {
 const DarkModeCustomization: CustomizationSettings = {
   title: "Customization",
   description:
-    "Customize the layout of your Verba by changing the title, subtitle, logo, and colors of the app.",
+      "Customize the layout by changing the title, subtitle, logo, and colors of the app.",
   settings: {
-    title: { text: "Verba", type: "text", description: "Title of the Page" },
+    title: { text: "Cerebro", type: "text", description: "Title of the Page" },
     subtitle: {
-      text: "advanced RAG",
+      text: "",
       type: "text",
       description: "Subtitle of the Page",
     },
     intro_message: {
-      text: "Welcome to the dark mode version of Verba! Spooky, right?",
+      text: "Welcome to Cerebro !",
       type: "text",
       description: "Intro Message",
     },
     placeholder_message: {
-      text: "Ask anything!",
+      text: "Ask Cerebro anything!",
       type: "text",
       description: "Input Placeholder",
     },
+    font: {
+      value: "Open_Sans",
+      type: "select",
+      options: AvailableFonts,
+      description: "Text Font",
+    },
     image: {
-      src: "https://github.com/weaviate/Verba/blob/main/img/verba_icon.png?raw=true",
+      src: "https://geosurvai.com/assets/images/zara.png",
       type: "image",
       description: "Logo of the Page",
     },
@@ -349,12 +356,6 @@ const DarkModeCustomization: CustomizationSettings = {
       type: "color",
       description: "Console Text",
     },
-    font: {
-      value: "Open_Sans",
-      type: "select",
-      options: AvailableFonts,
-      description: "Text Font",
-    },
     theme: "dark",
   },
 };
@@ -362,30 +363,32 @@ const DarkModeCustomization: CustomizationSettings = {
 const GoogleHackathonCustomization: CustomizationSettings = {
   title: "Customization",
   description:
-    "Customize the layout of your Verba by changing the title, subtitle, logo, and colors of the app.",
+      "Customize the layout by changing the title, subtitle, logo, and colors of the app.",
   settings: {
-    title: {
-      text: "Prinses Maxima Centrum",
-      type: "text",
-      description: "Title of the Page",
-    },
+    title: { text: "Cerebro", type: "text", description: "Title of the Page" },
     subtitle: {
-      text: "Medical RAG",
+      text: "",
       type: "text",
       description: "Subtitle of the Page",
     },
     intro_message: {
-      text: "Welcome to Medical Retrieval Augmented Generation! We ingested medical data, like clinical reports, research and more to improve access to healthcare. Try it out by asking questions related to diseases, symptoms and medical conditions.",
+      text: "Welcome to Cerebro !",
       type: "text",
       description: "Intro Message",
     },
     placeholder_message: {
-      text: "Ask a medical question",
+      text: "Ask Cerebro anything!",
       type: "text",
       description: "Input Placeholder",
     },
+    font: {
+      value: "Open_Sans",
+      type: "select",
+      options: AvailableFonts,
+      description: "Text Font",
+    },
     image: {
-      src: "https://www.prinsesmaximacentrum.nl/img/logo/prinses-maxima-centrum-logo-en.svg",
+      src: "https://geosurvai.com/assets/images/zara.png",
       type: "image",
       description: "Logo of the Page",
     },
@@ -440,12 +443,6 @@ const GoogleHackathonCustomization: CustomizationSettings = {
       type: "color",
       description: "Console Text",
     },
-    font: {
-      value: "Open_Sans",
-      type: "select",
-      options: AvailableFonts,
-      description: "Text Font",
-    },
     theme: "light",
   },
 };
@@ -453,30 +450,32 @@ const GoogleHackathonCustomization: CustomizationSettings = {
 const WeaviateCustomization: CustomizationSettings = {
   title: "Customization",
   description:
-    "Customize the layout of your Verba by changing the title, subtitle, logo, and colors of the app.",
+      "Customize the layout by changing the title, subtitle, logo, and colors of the app.",
   settings: {
-    title: {
-      text: "Weaviate Verba",
-      type: "text",
-      description: "Title of the Page",
-    },
+    title: { text: "Cerebro", type: "text", description: "Title of the Page" },
     subtitle: {
-      text: "Chatbot for Weaviate",
+      text: "",
       type: "text",
       description: "Subtitle of the Page",
     },
     intro_message: {
-      text: "Welcome to Weaviate, your AI-Native vector database. How can I help you with Weaviate today?",
+      text: "Welcome to Cerebro !",
       type: "text",
       description: "Intro Message",
     },
     placeholder_message: {
-      text: "Ask all questions related to Weaviate",
+      text: "Ask Cerebro anything!",
       type: "text",
       description: "Input Placeholder",
     },
+    font: {
+      value: "Inter",
+      type: "select",
+      options: AvailableFonts,
+      description: "Text Font",
+    },
     image: {
-      src: "https://github.com/weaviate/Verba/blob/1.0.0/frontend/public/weaviate.png?raw=true",
+      src: "https://geosurvai.com/assets/images/zara.png",
       type: "image",
       description: "Logo of the Page",
     },
@@ -531,12 +530,6 @@ const WeaviateCustomization: CustomizationSettings = {
       type: "color",
       description: "Console Text",
     },
-    font: {
-      value: "Inter",
-      type: "select",
-      options: AvailableFonts,
-      description: "Text Font",
-    },
     theme: "light",
   },
 };
@@ -544,7 +537,7 @@ const WeaviateCustomization: CustomizationSettings = {
 const BaseChat: ChatSettings = {
   title: "Chat Settings",
   description:
-    "Customize chat settings like caching generated answers in Weaviate or let Weaviate give you autocomplete suggestions.",
+    "Customize chat settings like caching generated answers and give you autocomplete suggestions.",
   settings: {
     caching: { checked: true, type: "check", description: "Enable Caching" },
     suggestion: {

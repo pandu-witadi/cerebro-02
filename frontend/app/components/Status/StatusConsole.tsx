@@ -21,7 +21,7 @@ const StatusConsoleComponent: React.FC<StatusConsoleComponentProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-col bg-bg-alt-verba rounded-lg shadow-lg p-5 text-text-verba gap-6 h-[65vh] overflow-auto">
+      <div className="flex flex-col bg-bg-alt-verba rounded-lg shadow-lg p-5 text-text-verba gap-6 h-[90vh] overflow-auto">
         <div className="flex gap-2">
           <p className="text-text-verba font-bold text-lg">{title}</p>
         </div>

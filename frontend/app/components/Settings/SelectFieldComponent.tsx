@@ -42,7 +42,7 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
         <select
           value={(settingsConfig[setting].settings as any)[title].value}
           onChange={handleChange}
-          className="select bg-bg-verba"
+          className="select bg-bg-verba  w-full"
         >
           {SelectSetting.options.map((template) => (
             <option key={"Select_" + template}>{template}</option>

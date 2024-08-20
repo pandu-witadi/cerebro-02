@@ -161,7 +161,7 @@ const DocumentSearchComponent: React.FC<DocumentSearchComponentProps> = ({
 
   return (
     <div className="flex flex-col gap-2  h-full">
-      <div className="flex flex-col bg-bg-alt-verba rounded-lg shadow-lg p-5 text-text-verba md:gap-5 min-h-[15vh] md:min-h-[9.3vh]">
+      <div className="flex flex-col bg-bg-alt-verba rounded-lg shadow-lg p-5 text-text-verba md:gap-5">
         {/*Search Bar*/}
         <form
           className="flex flex-col lg:flex-row w-full items-center justify-between gap-2 lg:gap-3"
@@ -206,7 +206,7 @@ const DocumentSearchComponent: React.FC<DocumentSearchComponentProps> = ({
           </div>
         </form>
       </div>
-      <div className="flex  h-screen flex-col bg-bg-alt-verba rounded-lg shadow-lg p-5 text-text-verba gap-3 sm:h-[35vh] md:h-[40vh] lg:h-[75vh] overflow-auto">
+      <div className="flex flex-col bg-bg-alt-verba rounded-lg shadow-lg p-5 text-text-verba gap-3 h-full">
         <div className="flex gap-2 items-center justify-center">
           <div className="flex items-center justify-center">
             <select

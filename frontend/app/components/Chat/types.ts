@@ -1,9 +1,9 @@
 //
-// 
+//
 import { DocumentChunk } from "../Document/types"
 
 export interface Message {
-    role: "user" | "system";
+    role: "user" | "system" | "assistant";
     content: string;
     cached?: boolean;
     distance?: string;

@@ -1,23 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react"
+import React from "react"
 
-import { IoChatbubbleSharp } from "react-icons/io5"
-import { IoDocumentSharp } from "react-icons/io5"
-import { HiOutlineStatusOnline } from "react-icons/hi"
-import { IoMdAddCircle } from "react-icons/io"
-import { IoSettingsSharp } from "react-icons/io5"
-import { IoBuildSharp } from "react-icons/io5"
-import { LuMenu } from "react-icons/lu"
+import {IoChatbubbleSharp} from "react-icons/io5"
+import {IoDocumentSharp} from "react-icons/io5"
+import {HiOutlineStatusOnline} from "react-icons/hi"
+import {IoMdAddCircle} from "react-icons/io"
+import {IoSettingsSharp} from "react-icons/io5"
+import {IoBuildSharp} from "react-icons/io5"
+import {LuMenu} from "react-icons/lu"
 
 import NavbarButton from "./NavButton"
-import { getGitHubStars } from "./util"
-
 import {
     sty_NavbarComponents
 } from "../pageLayout"
 import {useRouter} from "next/navigation";
-
 
 interface NavbarProps {
     imageSrc: string
@@ -28,6 +25,7 @@ interface NavbarProps {
     APIHost: string | null
     production: boolean
     isAdmin: boolean
+    onChangeUser: (s: boolean) => void;
     setCurrentPage: (
         page: "CHAT" | "DOCUMENTS" | "STATUS" | "ADD" | "SETTINGS" | "RAG"
     ) => void
@@ -35,21 +33,22 @@ interface NavbarProps {
 
 
 const Navbar: React.FC<NavbarProps> = ({
-    imageSrc,
-    title,
-    subtitle,
-    APIHost,
-    version,
-    currentPage,
-    setCurrentPage,
-    production,
-    isAdmin
-}) => {
+                                           imageSrc,
+                                           title,
+                                           subtitle,
+                                           APIHost,
+                                           version,
+                                           currentPage,
+                                           setCurrentPage,
+                                           production,
+                                           onChangeUser,
+                                           isAdmin
+                                       }) => {
 
     const icon_size = 18
 
     const CreateAdminNavBar = () => {
-        return(
+        return (
             <>
                 <div className="flex flex-row justify-center items-center">
                     <div className="hidden sm:h-[3vh] lg:h-[5vh] bg-text-alt-verba w-px sm:mx-2 md:mx-4"></div>
@@ -120,7 +119,10 @@ const Navbar: React.FC<NavbarProps> = ({
                             setCurrentPage={setCurrentPage}
                             setPage="SETTINGS"
                         />
-                        <button className="btn btn-sm btn-active btn-neutral">Logout</button>
+                        <button className="btn btn-sm btn-active btn-neutral" onClick={() => {
+                            onChangeUser(false);
+                        }}>Logout
+                        </button>
 
                         <div
                             className={` ${production ? "h-[0vh]" : "sm:h-[3vh] lg:h-[5vh] mx-1"} hidden sm:block bg-text-alt-verba w-px`}></div>
@@ -178,8 +180,8 @@ const Navbar: React.FC<NavbarProps> = ({
                                                 </li>
                                             )}
 
-                                            <li className="items-center justify-center text-xs text-text-alt-verba mt-2">
-                                                {version}
+                                            <li className="items-center justify-center text-xs text-text-alt-verba mt-2" onClick={() => {onChangeUser(false);}}>
+                                                Logout
                                             </li>
                                         </ul>
                                     </details>
@@ -194,18 +196,21 @@ const Navbar: React.FC<NavbarProps> = ({
 
     const router = useRouter();
     const CreateGuestNavBar = () => {
-        return(
+        return (
             <div className={'mr-2'}>
-                <button className="btn  btn-active accent-secondary-verba" onClick={()=>{router.push('/login')}}>Login</button>
+                <button className="btn btn-sm btn-active btn-primary" onClick={() => {
+                    router.push('/login')
+                }}>Login
+                </button>
             </div>
         )
     }
 
     return (
-        <div className={sty_NavbarComponents}>
+        <div className={'sticky flex justify-between items-center mb-3'}>
             {/* Logo, Title, Subtitle */}
             <div className="flex flex-row items-center gap-3">
-                <img src={imageSrc} width={30} className="flex"></img>
+                <img src={imageSrc} width={42} className="flex"></img>
                 <div className="flex flex-col lg:flex-row lg:items-end justify-center lg:gap-3">
                     <p className="sm:text-1xl md:text-1xl text-text-verba">
                         {title}

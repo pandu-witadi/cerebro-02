@@ -1,18 +1,11 @@
 "use client"
 import React, {useState} from "react";
-import {KEY_USER_TYPE} from "@/app/components/Settings/types";
 import {useRouter} from "next/navigation";
+import {setUserProfile} from "@/app/components/utils";
 
 const Page = () => {
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
-
-    const setUserProfile = (value: string) => {
-        if (typeof window !== "undefined") {
-            // Check if window is defined
-            localStorage.setItem(KEY_USER_TYPE, JSON.stringify(value))
-        }
-    }
 
     const router = useRouter();
     const loginUser = () => {
@@ -61,7 +54,7 @@ const Page = () => {
                                     <input
                                         onChange={handleUserPasswordChange}
                                         className="w-full content-center text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
-                                        type="" placeholder="Enter your password"/>
+                                        type="password" placeholder="Enter your password"/>
                                 </div>
                                 {/*<div className="flex items-center justify-between">*/}
                                 {/*    <div className="flex items-center">*/}

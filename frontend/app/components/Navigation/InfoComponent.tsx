@@ -20,7 +20,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({
     <div
       className={`items-center gap-2 ${settingConfig.Chat.settings.info_button.checked ? "flex" : "hidden"}`}
     >
-      <div className="tooltip tooltip-right text-xs" data-tip={tooltip_text}>
+      <div className="tooltip tooltip-right text-xs mb-2" data-tip={tooltip_text}>
         <button className="btn btn-circle btn-sm border-none bg-bg-verba hover:bg-secondary-verba text-text-verba">
           <FaInfo />
         </button>

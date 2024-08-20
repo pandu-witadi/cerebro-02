@@ -1,21 +1,21 @@
 "use client"
-import React, { useState, useEffect, useRef } from "react"
+import React, {useState, useEffect, useRef} from "react"
 import PulseLoader from "react-spinners/PulseLoader"
-import { IoMdSend } from "react-icons/io"
-import { IoIosRefresh } from "react-icons/io"
-import { AiFillRobot } from "react-icons/ai"
+import {IoMdSend} from "react-icons/io"
+import {IoIosRefresh} from "react-icons/io"
+import {AiFillRobot} from "react-icons/ai"
 
-import { DocumentChunk } from "../Document/types"
-import { Message, QueryPayload } from "./types"
-import { getWebSocketApiHost } from "./util"
+import {DocumentChunk} from "../Document/types"
+import {Message, QueryPayload} from "./types"
+import {getWebSocketApiHost} from "./util"
 import ChatMessage from "./ChatMessage"
-import { SettingsConfiguration } from "../Settings/types"
+import {SettingsConfiguration} from "../Settings/types"
 
 import StatusLabel from "./StatusLabel"
 
 import ComponentStatus from "../Status/ComponentStatus"
 
-import { RAGConfig } from "../RAG/types"
+import {RAGConfig} from "../RAG/types"
 
 import {
     sty_ChatIntercafe,
@@ -25,6 +25,7 @@ import {
 import {detectHost} from "@/app/api";
 
 interface ChatInterfaceComponentProps {
+    settingModel: string,
     settingConfig: SettingsConfiguration;
     APIHost: string | null;
     setChunks: (c: DocumentChunk[]) => void;
@@ -36,45 +37,16 @@ interface ChatInterfaceComponentProps {
 }
 
 const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
-    APIHost,
-    settingConfig,
-    setChunks,
-    setChunkTime,
-    setCurrentPage,
-    setContext,
-    production,
-    RAGConfig,
-}) => {
-
-    const [llm_model, set_llm_model] = useState(undefined);
-
-    const onOptionChangeHandler = (event:  React.ChangeEvent<any>) => {
-        set_llm_model(event.target.value);
-    }
-
-    const [options, setOptions] = useState<string[]>([])
-    useEffect(() => {
-        async function fetchData() {
-            const host = await detectHost()
-
-            // Fetch data
-            const resp = await fetch(host + "/api/ollama_model")
-            let data = await resp.json()
-            let results: string[] = ['Select model']
-            // Store results in the results array
-            data.forEach((value: string) => {
-                results.push(value)
-            });
-
-            // Update the options state
-            setOptions(results)
-        }
-
-        // Trigger the fetch
-        fetchData().then(r => {})
-    }, [])
-
-
+                                                                           settingModel,
+                                                                           APIHost,
+                                                                           settingConfig,
+                                                                           setChunks,
+                                                                           setChunkTime,
+                                                                           setCurrentPage,
+                                                                           setContext,
+                                                                           production,
+                                                                           RAGConfig,
+                                                                       }) => {
     const [previewText, setPreviewText] = useState("")
     const lastMessageRef = useRef<null | HTMLDivElement>(null)
 
@@ -92,7 +64,9 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
     const [notificationState, setNotificationState] = useState<"GOOD" | "BAD">("GOOD")
 
     const [isContext, setIsContext] = useState(false)
-    const checkContextHandler = () => { setIsContext(!isContext) }
+    const checkContextHandler = () => {
+        setIsContext(!isContext)
+    }
 
 
     const handleCopyToBillboard = (text: string) => {
@@ -101,7 +75,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                 triggerNotification("Copied message")
             },
             function (err) {
-              console.error("Unable to copy text: ", err)
+                console.error("Unable to copy text: ", err)
             }
         )
     }
@@ -179,7 +153,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                 } else {
                     setMessages((prev) => [
                         ...prev,
-                        { role: "system", content: full_text },
+                        {role: "system", content: full_text},
                     ])
                 }
                 setPreviewText("")
@@ -222,7 +196,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
         }
         if (lastMessageRef.current) {
             const lastMessage = messages[messages.length - 1];
-            lastMessageRef.current.scrollIntoView({ behavior: "smooth" })
+            lastMessageRef.current.scrollIntoView({behavior: "smooth"})
         }
     }, [messages])
 
@@ -351,11 +325,11 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
         if (isFetching.current)
             return
 
-        let messageTmp = [ ...messages ]
+        let messageTmp = [...messages]
 
         const sendInput = userInput
         if (sendInput.trim()) {
-            setMessages((prev) => [...prev, { role: "user", content: sendInput }])
+            setMessages((prev) => [...prev, {role: "user", content: sendInput}])
             setUserInput("")
 
             const textarea = document.getElementById("reset")
@@ -367,9 +341,9 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                 console.error('The element with ID "target" was not found in the DOM.')
             }
 
-            if ( !isContext ) {
+            if (!isContext) {
                 let chat_json = {
-                    "model": llm_model,
+                    "model": settingModel,
                     "messages": [
                         ...messageTmp,
                         {
@@ -378,7 +352,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                         }
                     ]
                 }
-                socket!.send( JSON.stringify(chat_json) )
+                socket!.send(JSON.stringify(chat_json))
                 isFetching.current = false
             } else {
                 try {
@@ -392,14 +366,14 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ query: sendInput }),
+                        body: JSON.stringify({query: sendInput}),
                     })
 
                     const data: QueryPayload = await response.json()
                     if (data) {
                         if (data.error !== "") {
                             let chat_json = {
-                                "model": llm_model,
+                                "model": settingModel,
                                 "messages": [
                                     ...messageTmp,
                                     {
@@ -408,7 +382,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                                     }
                                 ]
                             }
-                            socket!.send( JSON.stringify(chat_json) )
+                            socket!.send(JSON.stringify(chat_json))
                             isFetching.current = false
 
                         } else {
@@ -418,13 +392,12 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                             setChunkTime(data.took)
 
                             if (data.context) {
-                                console.log(data)
                                 let messageData = {
                                     role: 'user',
                                     content: sendInput.trim()
                                 }
                                 let chat_json = {
-                                    "model": llm_model,
+                                    "model": settingModel,
                                     "messages": [
                                         ...messageTmp,
                                         {
@@ -433,7 +406,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                                         }
                                     ]
                                 }
-                                socket!.send( JSON.stringify(chat_json) )
+                                socket!.send(JSON.stringify(chat_json))
                                 isFetching.current = false
 
                                 setContext(data.context)
@@ -461,19 +434,19 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
 
 
     const fetchSuggestions = async (query: string) => {
-        if ( isFetchingSuggestion || query === "" || isFetching.current || !settingConfig.Chat.settings.suggestion.checked ) {
+        if (isFetchingSuggestion || query === "" || isFetching.current || !settingConfig.Chat.settings.suggestion.checked) {
             setSuggestions([])
             return
         }
 
         try {
             setIsFetchingSuggestions(true)
-                const response = await fetch(APIHost + "/api/suggestions", {
+            const response = await fetch(APIHost + "/api/suggestions", {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ query }),
+                body: JSON.stringify({query}),
             })
 
             const data = await response.json()
@@ -500,7 +473,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
         return (
             <div className="flex flex-row gap-1">
                 {parts.map((part, i) => (
-                    <p key={i} className={ part.toLowerCase() === userInput.toLowerCase() ? "font-bold text-sm" : "" }>
+                    <p key={i} className={part.toLowerCase() === userInput.toLowerCase() ? "font-bold text-sm" : ""}>
                         {part}
                     </p>
                 ))}
@@ -510,9 +483,9 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
 
 
     return (
-        <div className= {sty_ChatIntercafe}>
+        <div className={sty_ChatIntercafe}>
             {/*Chat Messages*/}
-            <div className = {sty_ChatIntercafe_chat_message}>
+            <div className={sty_ChatIntercafe_chat_message}>
                 <div className="flex gap-1 md:gap-2 items-center">
                     <StatusLabel
                         status={
@@ -535,41 +508,29 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                     />
                     <div className="form-control mr-2 bg-bg-verba pl-2 pr-2 pt-1 pb-1 rounded-lg">
                         <label className="label cursor-pointer">
-                            <input type="checkbox" id="checkbox" checked={isContext} onChange={checkContextHandler} className="checkbox checkbox-primary"/>
+                            <input type="checkbox" id="checkbox" checked={isContext} onChange={checkContextHandler}
+                                   className="checkbox checkbox-primary"/>
                             <div className={'ml-2'}>{isContext ? "local context" : "no context"}</div>
                         </label>
                     </div>
-                    <div className="flex items-center justify-center">
-                        <select
-                            onChange={onOptionChangeHandler}
-                            className="select bg-bg-verba"
-                        >
-                            {options.map((option, index) => {
-                                return (
-                                    <option key={index}>
-                                        {option}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
                 </div>
 
-                <div className="flex flex-col">
-                    {messages.map( (message, index) => (
-                        <div ref={index === messages.length - 1 ? lastMessageRef : null} key={index} className={`mb-4 ${message.role === "user" ? "text-right" : ""}`}>
-                             <ChatMessage
-                                 message={message}
-                                 handleCopyToBillboard={handleCopyToBillboard}
-                                 settingConfig={settingConfig}
-                             />
-                         </div>
-                     ))}
-                     {/* Render the preview message if available */}
-                     {previewText && (
-                         <ChatMessage
+                <div className="flex flex-col overflow-auto">
+                    {messages.map((message, index) => (
+                        <div ref={index === messages.length - 1 ? lastMessageRef : null} key={index}
+                             className={`mb-4 ${message.role === "user" ? "text-right" : ""}`}>
+                            <ChatMessage
+                                message={message}
+                                handleCopyToBillboard={handleCopyToBillboard}
+                                settingConfig={settingConfig}
+                            />
+                        </div>
+                    ))}
+                    {/* Render the preview message if available */}
+                    {previewText && (
+                        <ChatMessage
                             settingConfig={settingConfig}
-                            message={{ role: "system", content: previewText, cached: false }}
+                            message={{role: "system", content: previewText, cached: false}}
                             handleCopyToBillboard={handleCopyToBillboard}
                         />
                     )}
@@ -602,49 +563,49 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
             </div>
 
             {/*Chat Input*/}
-            <div className= {sty_ChatIntercafe_chat_input}>
+            <div className={sty_ChatIntercafe_chat_input}>
                 <form className="flex justify-between w-full items-center gap-3" onSubmit={handleSendMessage}>
-                    <textarea id={"reset"} rows={1} cols={10}
-                        onKeyDown={handleKeyDown}
-                        value={userInput}
-                        onChange={(e) => {
-                            setUserInput(e.target.value)
-                            fetchSuggestions(e.target.value)
-                        }}
-                        className=" bg-bg-alt-verba textarea textarea-xs p-2 text-sm md:text-base w-full"
-                        placeholder={`Ask ${settingConfig.Customization.settings.title.text} anything`}
+                    <textarea id={"reset"} rows={2} cols={10}
+                              onKeyDown={handleKeyDown}
+                              value={userInput}
+                              onChange={(e) => {
+                                  setUserInput(e.target.value)
+                                  fetchSuggestions(e.target.value)
+                              }}
+                              className=" bg-bg-alt-verba textarea textarea-xs p-2 text-sm md:text-base w-full"
+                              placeholder={`Ask ${settingConfig.Customization.settings.title.text} anything`}
                     ></textarea>
                     <button
                         type="submit"
                         className="btn btn-circle border-none shadow-none bg-bg-alt-verba hover:bg-secondary-verba"
                     >
-                        <IoMdSend size={18} />
+                        <IoMdSend size={18}/>
                     </button>
                     <div
                         className="tooltip text-text-verba"
                         data-tip="Reset Conversation"
                     >
                         <button
-                              type="button"
-                              onClick={() => {
+                            type="button"
+                            onClick={() => {
                                 removeMessagesFromLocalStorage("VERBA_CONVERSATION")
                                 removeChunksFromLocalStorage("VERBA_CHUNKS")
                                 removeChunksFromLocalStorage("VERBA_CONTEXT")
                                 setChunks([])
                                 setMessages([
-                                  {
-                                    role: "system",
-                                    content:
-                                      settingConfig.Customization.settings.intro_message.text,
-                                  },
+                                    {
+                                        role: "system",
+                                        content:
+                                        settingConfig.Customization.settings.intro_message.text,
+                                    },
                                 ])
                                 setUserInput("")
                                 setSuggestions([])
                                 setContext("")
-                              }}
-                              className="btn btn-circle border-none shadow-none bg-bg-alt-verba hover:bg-secondary-verba"
+                            }}
+                            className="btn btn-circle border-none shadow-none bg-bg-alt-verba hover:bg-secondary-verba"
                         >
-                            <IoIosRefresh size={18} />
+                            <IoIosRefresh size={18}/>
                         </button>
                     </div>
                 </form>
@@ -663,11 +624,11 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
             </div>
 
             {/*Chat Notification*/}
-            <div
-                className={`animate-pop-in ${showNotification ? "opacity-100" : "opacity-0"} ${notificationState === "GOOD" ? "bg-secondary-verba" : "bg-warning-verba"} text-text-verba p-3 rounded text-sm transition-opacity`}
-            >
-                <p>{notificationText}</p>
-            </div>
+            {/*<div*/}
+            {/*    className={`animate-pop-in ${showNotification ? "opacity-100" : "opacity-0"} ${notificationState === "GOOD" ? "bg-secondary-verba" : "bg-warning-verba"} text-text-verba p-3 rounded text-sm transition-opacity`}*/}
+            {/*>*/}
+            {/*    <p>{notificationText}</p>*/}
+            {/*</div>*/}
         </div>
     )
 };

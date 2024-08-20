@@ -1,5 +1,5 @@
 # backend: /goldenverba
-goldenverba/server/frontend
+goldenverba/server/frontend/out
 
 # backend: /frontend
 frontend/node_modules

@@ -2,20 +2,21 @@
 //
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, {useState, useEffect} from "react"
 import Navbar from "./components/Navigation/NavbarComponent"
 import SettingsComponent from "./components/Settings/SettingsComponent"
 import ChatComponent from "./components/Chat/ChatComponent"
 import DocumentViewerComponent from "./components/Document/DocumentViewerComponent"
 import StatusComponent from "./components/Status/StatusComponent"
-import {Settings, BaseSettings, KEY_USER_TYPE} from "./components/Settings/types"
+import {Settings, BaseSettings, DEFAULT_MODEL} from "./components/Settings/types"
 import RAGComponent from "./components/RAG/RAGComponent"
-import { HealthPayload } from "./components/Status/types"
-import { RAGConfig, RAGResponse } from "./components/RAG/types"
-import { detectHost } from "./api"
-import { GoogleAnalytics } from "@next/third-parties/google"
-import { fonts, FontKey } from "./info"
+import {HealthPayload} from "./components/Status/types"
+import {RAGConfig, RAGResponse} from "./components/RAG/types"
+import {detectHost} from "./api"
+import {GoogleAnalytics} from "@next/third-parties/google"
+import {fonts, FontKey} from "./info"
 import PulseLoader from "react-spinners/PulseLoader"
+import {getUserProfile, setUserLogout} from "@/app/components/utils";
 
 export default function Home() {
     // Page States
@@ -27,6 +28,8 @@ export default function Home() {
     // Settings
     const [settingTemplate, setSettingTemplate] = useState("Default")
     const [baseSetting, setBaseSetting] = useState<Settings | null>(null)
+    const [settingModel, setSettingModel] = useState(DEFAULT_MODEL)
+    const [modelsList, setModelList] = useState<string[]>([])
 
     const fontKey = baseSetting ? (baseSetting[settingTemplate].Customization.settings.font.value as FontKey) : null; // Safely cast if you're sure, or use a check
     const fontClassName = fontKey ? fonts[fontKey]?.className || "" : ""
@@ -37,30 +40,13 @@ export default function Home() {
 
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const setUserProfile = (value: string) => {
-        if (typeof window !== "undefined") {
-            // Check if window is defined
-            localStorage.setItem(KEY_USER_TYPE, JSON.stringify(value))
-        }
-    }
-    const getUserProfile = () => {
-        let result : string | null = 'false';
-        if (typeof window !== "undefined") {
-            result = localStorage.getItem(KEY_USER_TYPE);
-            if(result === null) {
-                result = 'false';
-            }
-        }
-        setIsAdmin(result==='"true"');
-    }
-
     const fetchHost = async () => {
         try {
             const host = await detectHost()
             setAPIHost(host)
             if (host) {
                 try {
-                    const health_response = await fetch(host + "/api/health", { method: "GET" })
+                    const health_response = await fetch(host + "/api/health", {method: "GET"})
                     const health_data: HealthPayload = await health_response.json()
 
                     if (health_data) {
@@ -70,7 +56,7 @@ export default function Home() {
                         console.warn("Could not retrieve health data");
                     }
 
-                    const response = await fetch(host + "/api/config", { method: "GET" })
+                    const response = await fetch(host + "/api/config", {method: "GET"})
                     const data: RAGResponse = await response.json()
 
                     if (data) {
@@ -83,9 +69,15 @@ export default function Home() {
                         if (data.data.SETTING.themes) {
                             setBaseSetting(data.data.SETTING.themes);
                             setSettingTemplate(data.data.SETTING.selectedTheme)
+                            if (data.data.SETTING.themes.selectedModel) {
+                                setSettingModel(data.data.SETTING.selectedModel);
+                            } else {
+                                setSettingModel(DEFAULT_MODEL);
+                            }
                         } else {
                             setBaseSetting(BaseSettings)
                             setSettingTemplate("Default")
+                            setSettingModel(DEFAULT_MODEL);
                         }
                     } else {
                         console.warn("Configuration could not be retrieved")
@@ -103,7 +95,7 @@ export default function Home() {
 
     useEffect(() => {
         fetchHost().then();
-        getUserProfile();
+        setIsAdmin(getUserProfile());
     }, []);
 
     const importConfig = async () => {
@@ -114,13 +106,13 @@ export default function Home() {
             const payload = {
                 config: {
                     RAG: RAGConfig,
-                    SETTING: { selectedTheme: settingTemplate, themes: baseSetting },
+                    SETTING: {selectedTheme: settingTemplate, selectedModel: settingModel, themes: baseSetting},
                 },
             };
 
             const response = await fetch(APIHost + "/api/set_config", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),
             })
         } catch (error) {
@@ -129,31 +121,56 @@ export default function Home() {
     }
 
     useEffect(() => {
-        importConfig()
+        async function fetchModelList() {
+            const host = await detectHost()
+
+            // Fetch data
+            const resp = await fetch(host + "/api/ollama_model")
+            let data = await resp.json()
+            let results: string[] = []
+            // Store results in the results array
+            data.forEach((value: string) => {
+                results.push(value)
+            });
+
+            // Update the options state
+            setModelList(results)
+        }
+
+        // Trigger the fetch
+        fetchModelList().then(r => {})
+    }, [])
+
+    useEffect(() => {
+        importConfig().then();
     }, [baseSetting, settingTemplate])
 
     useEffect(() => {
         if (baseSetting) {
-            document.documentElement.style.setProperty( "--primary-verba",      baseSetting[settingTemplate].Customization.settings.primary_color.color )
-            document.documentElement.style.setProperty( "--secondary-verba",    baseSetting[settingTemplate].Customization.settings.secondary_color .color )
-            document.documentElement.style.setProperty( "--warning-verba",      baseSetting[settingTemplate].Customization.settings.warning_color.color )
-            document.documentElement.style.setProperty( "--bg-verba",           baseSetting[settingTemplate].Customization.settings.bg_color.color )
-            document.documentElement.style.setProperty( "--bg-alt-verba",       baseSetting[settingTemplate].Customization.settings.bg_alt_color.color )
-            document.documentElement.style.setProperty( "--text-verba",         baseSetting[settingTemplate].Customization.settings.text_color.color )
-            document.documentElement.style.setProperty( "--text-alt-verba",     baseSetting[settingTemplate].Customization.settings.text_alt_color.color )
-            document.documentElement.style.setProperty( "--button-verba",       baseSetting[settingTemplate].Customization.settings.button_color.color )
-            document.documentElement.style.setProperty( "--button-hover-verba", baseSetting[settingTemplate].Customization.settings.button_hover_color.color )
-            document.documentElement.style.setProperty( "--bg-console-verba",   baseSetting[settingTemplate].Customization.settings.bg_console.color )
-            document.documentElement.style.setProperty( "--text-console-verba", baseSetting[settingTemplate].Customization.settings.text_console.color )
+            document.documentElement.style.setProperty("--primary-verba", baseSetting[settingTemplate].Customization.settings.primary_color.color)
+            document.documentElement.style.setProperty("--secondary-verba", baseSetting[settingTemplate].Customization.settings.secondary_color.color)
+            document.documentElement.style.setProperty("--warning-verba", baseSetting[settingTemplate].Customization.settings.warning_color.color)
+            document.documentElement.style.setProperty("--bg-verba", baseSetting[settingTemplate].Customization.settings.bg_color.color)
+            document.documentElement.style.setProperty("--bg-alt-verba", baseSetting[settingTemplate].Customization.settings.bg_alt_color.color)
+            document.documentElement.style.setProperty("--text-verba", baseSetting[settingTemplate].Customization.settings.text_color.color)
+            document.documentElement.style.setProperty("--text-alt-verba", baseSetting[settingTemplate].Customization.settings.text_alt_color.color)
+            document.documentElement.style.setProperty("--button-verba", baseSetting[settingTemplate].Customization.settings.button_color.color)
+            document.documentElement.style.setProperty("--button-hover-verba", baseSetting[settingTemplate].Customization.settings.button_hover_color.color)
+            document.documentElement.style.setProperty("--bg-console-verba", baseSetting[settingTemplate].Customization.settings.bg_console.color)
+            document.documentElement.style.setProperty("--text-console-verba", baseSetting[settingTemplate].Customization.settings.text_console.color)
         }
     }, [baseSetting, settingTemplate]);
 
+    const onChangeUser = (status: boolean) => {
+        let v = setUserLogout();
+        setIsAdmin(v);
+    }
     return (
         <main
-            className={`min-h-screen p-2 bg-bg-verba text-text-verba ${fontClassName}`}
-            data-theme={ baseSetting ? baseSetting[settingTemplate].Customization.settings.theme : "light" }
+            className={`h-screen p-2 bg-bg-verba text-text-verba ${fontClassName}`}
+            data-theme={baseSetting ? baseSetting[settingTemplate].Customization.settings.theme : "light"}
         >
-            {gtag !== "" && <GoogleAnalytics gaId={gtag} />}
+            {gtag !== "" && <GoogleAnalytics gaId={gtag}/>}
 
             {baseSetting ? (
                 <div>
@@ -167,10 +184,12 @@ export default function Home() {
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
                         isAdmin={isAdmin}
+                        onChangeUser={onChangeUser}
                     />
 
                     {currentPage === "CHAT" && (
                         <ChatComponent
+                            settingModel={settingModel}
                             production={production}
                             settingConfig={baseSetting[settingTemplate]}
                             APIHost={APIHost}
@@ -201,6 +220,7 @@ export default function Home() {
                         <RAGComponent
                             baseSetting={baseSetting}
                             settingTemplate={settingTemplate}
+                            settingModel={settingModel}
                             buttonTitle="Import"
                             settingConfig={baseSetting[settingTemplate]}
                             APIHost={APIHost}
@@ -215,6 +235,7 @@ export default function Home() {
                         <RAGComponent
                             baseSetting={baseSetting}
                             settingTemplate={settingTemplate}
+                            settingModel={settingModel}
                             buttonTitle="Save"
                             settingConfig={baseSetting[settingTemplate]}
                             APIHost={APIHost}
@@ -229,6 +250,9 @@ export default function Home() {
                         <SettingsComponent
                             settingTemplate={settingTemplate}
                             setSettingTemplate={setSettingTemplate}
+                            settingModel={settingModel}
+                            setSettingModel={setSettingModel}
+                            modelList={modelsList}
                             baseSetting={baseSetting}
                             setBaseSetting={setBaseSetting}
                         />
@@ -236,9 +260,9 @@ export default function Home() {
                 </div>
             ) : (
                 <div className="flex items-center justify-center h-screen gap-2">
-                        <PulseLoader loading={true} size={12} speedMultiplier={0.75} />
-                        <p>Loading Verba</p>
-                    </div>
+                    <PulseLoader loading={true} size={12} speedMultiplier={0.75}/>
+                    <p>Loading ...</p>
+                </div>
             )}
             {/*
             <footer className="footer footer-center p-1 mt-2 bg-bg-verba text-text-alt-verba">
