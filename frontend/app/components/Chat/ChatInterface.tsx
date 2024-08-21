@@ -63,7 +63,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
     const [notificationText, setNotificationText] = useState("")
     const [notificationState, setNotificationState] = useState<"GOOD" | "BAD">("GOOD")
 
-    const [isContext, setIsContext] = useState(false)
+    const [isContext, setIsContext] = useState(true)
     const checkContextHandler = () => {
         setIsContext(!isContext)
     }
@@ -510,7 +510,7 @@ const ChatInterfaceComponent: React.FC<ChatInterfaceComponentProps> = ({
                         <label className="label cursor-pointer">
                             <input type="checkbox" id="checkbox" checked={isContext} onChange={checkContextHandler}
                                    className="checkbox checkbox-primary"/>
-                            <div className={'ml-2'}>{isContext ? "local context" : "no context"}</div>
+                            <div className={'ml-2'}>{isContext ? "local data" : "model data"}</div>
                         </label>
                     </div>
                 </div>

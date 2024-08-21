@@ -90,13 +90,13 @@ const ChunksComponent: React.FC<ChunksComponentComponentProps> = ({
                       </div>
                   )}
               </div>
-              <div className="flex flex-row gap-1">
+              <div className="flex sm:flex-row gap-2 flex-wrap">
                   {chunks &&
                       chunks.map((chunk, index) => (
                           <button
                               key={chunk.doc_name + index}
                               onClick={() => setSelectedChunk(chunk)}
-                              className={`btn md:btn-base bg-button-verba hover:bg-button-hover-verba border-none lg:btn-lg sm:w-2/3 md:w-1/3 lg:w-full flex justify-start items-center gap-3 ${selectedChunk?.chunk_id === chunk.chunk_id && selectedChunk.doc_uuid === chunk.doc_uuid ? "bg-secondary-verba" : "bg-button-verba"} hover:button-hover-verba`}
+                              className={`btn md:btn-base bg-button-verba hover:bg-button-hover-verba border-none flex justify-start items-center gap-5 ${selectedChunk?.chunk_id === chunk.chunk_id && selectedChunk.doc_uuid === chunk.doc_uuid ? "bg-secondary-verba" : "bg-button-verba"} hover:button-hover-verba`}
                           >
                               <div
                                   className="mx-0 p-0 tooltip text-xs"
