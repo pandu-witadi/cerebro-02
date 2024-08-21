@@ -170,7 +170,7 @@ export default function Home() {
     }
     return (
         <>
-            {isLoginPage ? <LoginPage setIsLoginPage={setIsLoginPage}/> :
+            {isLoginPage ? <LoginPage setIsLoginPage={setIsLoginPage} setIsAdmin={setIsAdmin}/> :
                 <main
                     className={`h-screen p-2 bg-bg-verba text-text-verba ${fontClassName}`}
                     data-theme={baseSetting ? baseSetting[settingTemplate].Customization.settings.theme : "light"}

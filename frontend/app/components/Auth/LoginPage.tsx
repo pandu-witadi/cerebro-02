@@ -4,9 +4,10 @@ import {setUserProfile} from "@/app/components/utils";
 
 interface LoginProps {
     setIsLoginPage: (s: boolean) => void;
+    setIsAdmin: (s: boolean) => void;
 }
 
-const LoginPage: React.FC<LoginProps> = ({setIsLoginPage}) => {
+const LoginPage: React.FC<LoginProps> = ({setIsLoginPage, setIsAdmin}) => {
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
 
@@ -15,7 +16,7 @@ const LoginPage: React.FC<LoginProps> = ({setIsLoginPage}) => {
         if(status) {
             setUserProfile('true');
             setIsLoginPage(false);
-            window.location.reload();
+            setIsAdmin(true);
         }
         else {
             setUserProfile('false');
