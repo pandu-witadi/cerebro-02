@@ -11,10 +11,6 @@ import {IoBuildSharp} from "react-icons/io5"
 import {LuMenu} from "react-icons/lu"
 
 import NavbarButton from "./NavButton"
-import {
-    sty_NavbarComponents
-} from "../pageLayout"
-import {useRouter} from "next/navigation";
 
 interface NavbarProps {
     imageSrc: string
@@ -26,6 +22,7 @@ interface NavbarProps {
     production: boolean
     isAdmin: boolean
     onChangeUser: (s: boolean) => void;
+    setIsLoginPage: (s: boolean) => void;
     setCurrentPage: (
         page: "CHAT" | "DOCUMENTS" | "STATUS" | "ADD" | "SETTINGS" | "RAG"
     ) => void
@@ -42,7 +39,8 @@ const Navbar: React.FC<NavbarProps> = ({
                                            setCurrentPage,
                                            production,
                                            onChangeUser,
-                                           isAdmin
+                                           isAdmin,
+                                           setIsLoginPage
                                        }) => {
 
     const icon_size = 18
@@ -194,12 +192,11 @@ const Navbar: React.FC<NavbarProps> = ({
         );
     }
 
-    const router = useRouter();
     const CreateGuestNavBar = () => {
         return (
             <div className={'mr-2'}>
                 <button className="btn btn-sm btn-active btn-primary" onClick={() => {
-                    router.push('/login')
+                    setIsLoginPage(true);
                 }}>Login
                 </button>
             </div>

@@ -17,6 +17,7 @@ import {GoogleAnalytics} from "@next/third-parties/google"
 import {fonts, FontKey} from "./info"
 import PulseLoader from "react-spinners/PulseLoader"
 import {getUserProfile, setUserLogout} from "@/app/components/utils";
+import LoginPage from "@/app/components/Auth/LoginPage";
 
 export default function Home() {
     // Page States
@@ -39,6 +40,7 @@ export default function Home() {
     const [APIHost, setAPIHost] = useState<string | null>(null)
 
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isLoginPage, setIsLoginPage] = useState(false);
 
     const fetchHost = async () => {
         try {
@@ -138,7 +140,8 @@ export default function Home() {
         }
 
         // Trigger the fetch
-        fetchModelList().then(r => {})
+        fetchModelList().then(r => {
+        })
     }, [])
 
     useEffect(() => {
@@ -166,111 +169,116 @@ export default function Home() {
         setIsAdmin(v);
     }
     return (
-        <main
-            className={`h-screen p-2 bg-bg-verba text-text-verba ${fontClassName}`}
-            data-theme={baseSetting ? baseSetting[settingTemplate].Customization.settings.theme : "light"}
-        >
-            {gtag !== "" && <GoogleAnalytics gaId={gtag}/>}
+        <>
+            {isLoginPage ? <LoginPage setIsLoginPage={setIsLoginPage}/> :
+                <main
+                    className={`h-screen p-2 bg-bg-verba text-text-verba ${fontClassName}`}
+                    data-theme={baseSetting ? baseSetting[settingTemplate].Customization.settings.theme : "light"}
+                >
+                    {gtag !== "" && <GoogleAnalytics gaId={gtag}/>}
 
-            {baseSetting ? (
-                <div>
-                    <Navbar
-                        APIHost={APIHost}
-                        production={production}
-                        title={baseSetting[settingTemplate].Customization.settings.title.text}
-                        subtitle={baseSetting[settingTemplate].Customization.settings.subtitle.text}
-                        imageSrc={baseSetting[settingTemplate].Customization.settings.image.src}
-                        version="v2.0.4"
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        isAdmin={isAdmin}
-                        onChangeUser={onChangeUser}
-                    />
+                    {baseSetting ? (
+                        <div>
+                            <Navbar
+                                APIHost={APIHost}
+                                production={production}
+                                title={baseSetting[settingTemplate].Customization.settings.title.text}
+                                subtitle={baseSetting[settingTemplate].Customization.settings.subtitle.text}
+                                imageSrc={baseSetting[settingTemplate].Customization.settings.image.src}
+                                version="v2.0.4"
+                                currentPage={currentPage}
+                                setCurrentPage={setCurrentPage}
+                                isAdmin={isAdmin}
+                                onChangeUser={onChangeUser}
+                                setIsLoginPage={setIsLoginPage}
+                            />
 
-                    {currentPage === "CHAT" && (
-                        <ChatComponent
-                            settingModel={settingModel}
-                            production={production}
-                            settingConfig={baseSetting[settingTemplate]}
-                            APIHost={APIHost}
-                            RAGConfig={RAGConfig}
-                            setCurrentPage={setCurrentPage}
-                        />
+                            {currentPage === "CHAT" && (
+                                <ChatComponent
+                                    settingModel={settingModel}
+                                    production={production}
+                                    settingConfig={baseSetting[settingTemplate]}
+                                    APIHost={APIHost}
+                                    RAGConfig={RAGConfig}
+                                    setCurrentPage={setCurrentPage}
+                                />
+                            )}
+
+                            {currentPage === "DOCUMENTS" && (
+                                <DocumentViewerComponent
+                                    RAGConfig={RAGConfig}
+                                    production={production}
+                                    setCurrentPage={setCurrentPage}
+                                    settingConfig={baseSetting[settingTemplate]}
+                                    APIHost={APIHost}
+                                />
+                            )}
+
+                            {currentPage === "STATUS" && !production && (
+                                <StatusComponent
+                                    fetchHost={fetchHost}
+                                    settingConfig={baseSetting[settingTemplate]}
+                                    APIHost={APIHost}
+                                />
+                            )}
+
+                            {currentPage === "ADD" && !production && (
+                                <RAGComponent
+                                    baseSetting={baseSetting}
+                                    settingTemplate={settingTemplate}
+                                    settingModel={settingModel}
+                                    buttonTitle="Import"
+                                    settingConfig={baseSetting[settingTemplate]}
+                                    APIHost={APIHost}
+                                    RAGConfig={RAGConfig}
+                                    setRAGConfig={setRAGConfig}
+                                    setCurrentPage={setCurrentPage}
+                                    showComponents={["Reader", "Chunker", "Embedder"]}
+                                />
+                            )}
+
+                            {currentPage === "RAG" && !production && (
+                                <RAGComponent
+                                    baseSetting={baseSetting}
+                                    settingTemplate={settingTemplate}
+                                    settingModel={settingModel}
+                                    buttonTitle="Save"
+                                    settingConfig={baseSetting[settingTemplate]}
+                                    APIHost={APIHost}
+                                    RAGConfig={RAGConfig}
+                                    setRAGConfig={setRAGConfig}
+                                    setCurrentPage={setCurrentPage}
+                                    showComponents={["Embedder", "Retriever", "Generator"]}
+                                />
+                            )}
+
+                            {currentPage === "SETTINGS" && !production && (
+                                <SettingsComponent
+                                    settingTemplate={settingTemplate}
+                                    setSettingTemplate={setSettingTemplate}
+                                    settingModel={settingModel}
+                                    setSettingModel={setSettingModel}
+                                    modelList={modelsList}
+                                    baseSetting={baseSetting}
+                                    setBaseSetting={setBaseSetting}
+                                />
+                            )}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-screen gap-2">
+                            <PulseLoader loading={true} size={12} speedMultiplier={0.75}/>
+                            <p>Loading ...</p>
+                        </div>
                     )}
-
-                    {currentPage === "DOCUMENTS" && (
-                        <DocumentViewerComponent
-                            RAGConfig={RAGConfig}
-                            production={production}
-                            setCurrentPage={setCurrentPage}
-                            settingConfig={baseSetting[settingTemplate]}
-                            APIHost={APIHost}
-                        />
-                    )}
-
-                    {currentPage === "STATUS" && !production && (
-                        <StatusComponent
-                            fetchHost={fetchHost}
-                            settingConfig={baseSetting[settingTemplate]}
-                            APIHost={APIHost}
-                        />
-                    )}
-
-                    {currentPage === "ADD" && !production && (
-                        <RAGComponent
-                            baseSetting={baseSetting}
-                            settingTemplate={settingTemplate}
-                            settingModel={settingModel}
-                            buttonTitle="Import"
-                            settingConfig={baseSetting[settingTemplate]}
-                            APIHost={APIHost}
-                            RAGConfig={RAGConfig}
-                            setRAGConfig={setRAGConfig}
-                            setCurrentPage={setCurrentPage}
-                            showComponents={["Reader", "Chunker", "Embedder"]}
-                        />
-                    )}
-
-                    {currentPage === "RAG" && !production && (
-                        <RAGComponent
-                            baseSetting={baseSetting}
-                            settingTemplate={settingTemplate}
-                            settingModel={settingModel}
-                            buttonTitle="Save"
-                            settingConfig={baseSetting[settingTemplate]}
-                            APIHost={APIHost}
-                            RAGConfig={RAGConfig}
-                            setRAGConfig={setRAGConfig}
-                            setCurrentPage={setCurrentPage}
-                            showComponents={["Embedder", "Retriever", "Generator"]}
-                        />
-                    )}
-
-                    {currentPage === "SETTINGS" && !production && (
-                        <SettingsComponent
-                            settingTemplate={settingTemplate}
-                            setSettingTemplate={setSettingTemplate}
-                            settingModel={settingModel}
-                            setSettingModel={setSettingModel}
-                            modelList={modelsList}
-                            baseSetting={baseSetting}
-                            setBaseSetting={setBaseSetting}
-                        />
-                    )}
-                </div>
-            ) : (
-                <div className="flex items-center justify-center h-screen gap-2">
-                    <PulseLoader loading={true} size={12} speedMultiplier={0.75}/>
-                    <p>Loading ...</p>
-                </div>
-            )}
-            {/*
+                    {/*
             <footer className="footer footer-center p-1 mt-2 bg-bg-verba text-text-alt-verba">
                 <aside>
                     <p>cerebro © 2024</p>
                 </aside>
             </footer>
             */}
-        </main>
+                </main>
+            }
+        </>
     );
 }
